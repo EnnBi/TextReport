@@ -284,7 +284,8 @@ public class ReportGeneratorService {
 	}
 
 	public void addPageFooter(Template template,RandomAccessFile file,Map<String,Double> map, boolean onlyPage) throws IOException{
-		int maxRow=templateDao.findMaxRowOfPageFooterOnTemplateId(template.getId());
+		Integer maxRow=templateDao.findMaxRowOfPageFooterOnTemplateId(template.getId());
+		maxRow=maxRow!=null?maxRow:0;
 		List<PageFooter> pageFooters=template.getPageFooter();
 		for(int i=1;i<=maxRow;i++){
 			String line = "";

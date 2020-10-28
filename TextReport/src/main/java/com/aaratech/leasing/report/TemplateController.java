@@ -731,6 +731,47 @@ public class TemplateController {
 		keys.add(setKey("CLASS_ID",Alignment.LEFT,20,template));
 		keys.add(setKey("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template));
 		keys.add(setKey("PTP_AMOUNT",Alignment.RIGHT,20,template));
+		keys.add(setKey("PTP_AMOUNT",Alignment.RIGHT,20,template));
+		template.setTableKeys(keys);
+
+		template.setDateFormat("MMM-dd-yyyy");
+		template.setPageLines(80);
+		template.setMaxWidth(133);
+		templateDao.save(template);
+	}
+	
+	@RequestMapping("/broken_promises_summary_template")
+	public void broken_promises_summary_template() {
+
+		Template template = new Template();
+		template.setName("Broken_Promises_Summary_Template");
+
+		List<MainHeader> mainHeaders = new ArrayList<>();
+		mainHeaders.add(setMainHeader("title", Type.VALUE, 1, Alignment.CENTER, 115, false, false, template,false));
+		mainHeaders.add(setMainHeader("Date :", Type.LABEL, 1, Alignment.CENTER, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("date", Type.DATE, 1, Alignment.RIGHT, 11, false, false, template,false));
+		mainHeaders.add(setMainHeader("Today Borken Promises  Summary Report", Type.LABEL, 2, Alignment.CENTER, 117, false, false, template,false));
+		mainHeaders.add(setMainHeader("Page :", Type.LABEL, 2, Alignment.LEFT, 6, false, false, template,false));
+		mainHeaders.add(setMainHeader("page", Type.PAGE, 2, Alignment.LEFT, 10, false, false, template,false));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 3, Alignment.CENTER, 0, true, false, template,false));
+		mainHeaders.add(setMainHeader("Company Name : ", Type.LABEL, 4, Alignment.LEFT, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("COMPANY_CODE", Type.VALUE, 4, Alignment.LEFT, 117, false, false, template,true));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 5, Alignment.CENTER, 0, true, false, template,false));
+		template.setMainHeader(mainHeaders);
+
+
+		List<TableHeader>headers = new ArrayList<>();
+		headers.add(setHeaders("S.No",template,6));
+		headers.add(setHeaders("Collector",template,20));
+		headers.add(setHeaders("Number of Accounts",template,20));
+		headers.add(setHeaders("PTP Amount",template,20));
+
+		template.setTableHeaders(headers);
+
+		List<Key> keys = new ArrayList<>();
+		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("PTP_AMOUNT",Alignment.RIGHT,20,template,false,true));
 		template.setTableKeys(keys);
 
 		template.setDateFormat("MMM-dd-yyyy");
@@ -778,6 +819,17 @@ public class TemplateController {
 		key.setAlignment(alignment.toString());
 		key.setTemplate(template);
 		key.setWidth(width);
+		return key;
+	}
+	
+	Key setKeyWithSumAndFormat(String value,Alignment alignment,int width,Template template,boolean doSum,boolean doFormat){
+		Key key =  new Key();
+		key.setValue(value);
+		key.setAlignment(alignment.toString());
+		key.setTemplate(template);
+		key.setWidth(width);
+		key.setDoSum(doSum);
+		key.setDoFormat(doFormat);
 		return key;
 	}
 	

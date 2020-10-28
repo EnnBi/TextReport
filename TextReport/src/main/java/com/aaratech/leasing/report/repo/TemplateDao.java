@@ -26,7 +26,7 @@ public interface TemplateDao extends CrudRepository<Template, Long> {
 	Integer findMaxRowOfMainFooterOnTemplateId(@Param("id") long id);
 
 	@Query("Select Max(m.row) from PageFooter m where m.template.id = :id")
-	int findMaxRowOfPageFooterOnTemplateId(@Param("id") long id);
+	Integer findMaxRowOfPageFooterOnTemplateId(@Param("id") long id);
 
 	@Query("Select Max(m.row) from PageFooter m where m.template.id = :id and m.isPage = true")
 	Integer findPageTotalRowsOfPageFooterOnTemplateId(@Param("id") long id);

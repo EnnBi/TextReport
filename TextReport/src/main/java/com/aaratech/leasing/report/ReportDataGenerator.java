@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.aaratech.leasing.projections.BrokenPromisesSummary;
 import com.aaratech.leasing.projections.ClassWiseAccountSummary;
 import com.aaratech.leasing.report.dataentity.UnworkedAcctDays;
 import com.aaratech.leasing.report.repo.*;
@@ -554,6 +555,41 @@ public class ReportDataGenerator {
 			dataMap.put("TOTAL_DUE_AMOUNT", acc.getTOTAL_DUE_AMOUNT()!=null?acc.getTOTAL_DUE_AMOUNT():0);
 			dataMap.put("PTP_AMOUNT", acc.getPTP_AMOUNT()!=null?acc.getPTP_AMOUNT():0);
 			dataMap.put("COMPANY_CODE", acc.getCOMPANY_CODE());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			detailsList.add(dataMap);
+		});
+		mainDataMap.put("details", detailsList);
+		if (detailsList.size()>0) {
+			System.out.println("mainDataMap >>> " + mainDataMap);
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			try {
+				objectMapper.setDateFormat(new SimpleDateFormat("MMM-dd-yyyy"));
+				String json = objectMapper.writeValueAsString(mainDataMap);
+				System.out.println("json >>>> " + json);
+				reportService.generateReport(json);
+			} catch (JsonProcessingException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@GetMapping("/brokenPromisesSummary")
+	public void brokenPromisesSummary(){
+		
+		List<BrokenPromisesSummary> brokenPromisesSummary=accountDetailsRepo.fetchBrokenPromisesSummary();
+		
+		HashMap<String, Object> mainDataMap= new HashMap<String, Object>();
+		mainDataMap.put("class", "Broken_Promises_Summary_Template");
+		mainDataMap.put("title", "Aaratech Leasing System");
+		Date reportDate = getDateByCompanyCode("BAY");
+		List<HashMap<String, Comparable>> detailsList = new ArrayList<HashMap<String, Comparable>>();
+		brokenPromisesSummary.forEach(bps -> {
+			HashMap<String, Comparable> dataMap= new HashMap<String, Comparable>();
+			dataMap.put("COMPANY_CODE", bps.getCOMPANY_CODE());
+			dataMap.put("COLLECTOR_ID", bps.getACTION_COLLECTOR_ID());
+			dataMap.put("NO_OF_ACCOUNTS", bps.getNO_OF_ACCOUNTS());
+			dataMap.put("PTP_AMOUNT", bps.getPTP_AMOUNT());
 			dataMap.put("HEADER_DATE", formatDate(reportDate));
 			detailsList.add(dataMap);
 		});

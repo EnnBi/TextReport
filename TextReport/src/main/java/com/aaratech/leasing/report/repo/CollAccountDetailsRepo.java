@@ -3,10 +3,12 @@ package com.aaratech.leasing.report.repo;
 import java.util.Date;
 import java.util.List;
 
-import com.aaratech.leasing.projections.ClassWiseAccountSummary;
-import com.aaratech.leasing.report.CollAccountDetails;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+
+import com.aaratech.leasing.projections.BrokenPromisesSummary;
+import com.aaratech.leasing.projections.ClassWiseAccountSummary;
+import com.aaratech.leasing.report.CollAccountDetails;
 
 public interface CollAccountDetailsRepo extends CrudRepository<CollAccountDetails, String> {
 	
@@ -27,7 +29,7 @@ public interface CollAccountDetailsRepo extends CrudRepository<CollAccountDetail
 		 String getCOLLECTOR_ID();
 		 String getCUSTOMER_NAME();
 
-		 String getCLASS_ID();
+		 String getCLASS_ID();	
 
 		 String getPRIORITY();
 
@@ -39,12 +41,15 @@ public interface CollAccountDetailsRepo extends CrudRepository<CollAccountDetail
 
 		 String getCOMPANY_CODE();
 	}
-	
+	//Class Wise Account Summary
     @Query(nativeQuery=true,
     		value="Select COMPANY_CODE,CLASS_ID,Count(CLASS_ID) as NUMBER_OF_ACCOUNTS,SUM(TOTAL_AMOUNT_DUE) as TOTAL_DUE_AMOUNT,SUM(CURRENT_BALANCE) as CURRENT_DUE_AMOUNT,SUM(PTP_AMOUNT) as PTP_AMOUNT from dbo.COLL_ACCOUNT_DETAILS Group By CLASS_ID,COMPANY_CODE")
     List<ClassWiseAccountSummary> fetchAccountSummary();
-
-
+    
+//AH.COMPANY_CODE=DM.COMPANY_CODE AND AH.ACTION_DATE_AND_TIME=DM.BUSINESS_DATE and																																																																//here
+    @Query(nativeQuery=true,value="Select COALESCE(AH.COMPANY_CODE, '') as COMPANY_CODE, COALESCE(ACTION_COLLECTOR_ID, '') as ACTION_COLLECTOR_ID , COALESCE(count(ACTION_COLLECTOR_ID),0) as NO_OF_ACCOUNTS, COALESCE(SUM(cad.PTP_TOTAL_AMOUNT),0) as PTP_AMOUNT from COLL_ACTIONS_HISTORY AH, COLL_ACCOUNT_DETAILS cad, DATE_MASTER as DM where   AH.ACTION_STATUS='A' and ACTION_CODE='BRKN' GROUP BY ACTION_COLLECTOR_ID,AH.COMPANY_CODE")
+    List<BrokenPromisesSummary> fetchBrokenPromisesSummary();
+ 
 
 
 
