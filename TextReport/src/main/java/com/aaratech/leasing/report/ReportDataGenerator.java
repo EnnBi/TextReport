@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.aaratech.leasing.projections.BrokenPromisesSummary;
+import com.aaratech.leasing.projections.BucketWise;
 import com.aaratech.leasing.projections.ClassWiseAccountSummary;
 import com.aaratech.leasing.projections.SatisfiedAccounts;
 import com.aaratech.leasing.projections.UnworkedAccountDays;
@@ -687,6 +688,154 @@ public class ReportDataGenerator {
 			dataMap.put("COMPANY_CODE", acc.getCompanyCode());
 			dataMap.put("HEADER_DATE", formatDate(reportDate));
 			detailsList.add(dataMap);
+		});
+		mainDataMap.put("total", doubleval);
+		mainDataMap.put("details", detailsList);
+		if (detailsList.size()>0) {
+			System.out.println("mainDataMap >>> " + mainDataMap);
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			try {
+				objectMapper.setDateFormat(new SimpleDateFormat("MMM-dd-yyyy"));
+				String json = objectMapper.writeValueAsString(mainDataMap);
+				System.out.println("json >>>> " + json);
+				reportService.generateReport(json);
+			} catch (JsonProcessingException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@GetMapping("/bucketWiseReport")
+	public void bucketWiseReport(){
+		List<BucketWise> bucketWises=accountDetailsRepo.fetchBucketWise();
+		HashMap<String, Object> mainDataMap= new HashMap<String, Object>();
+		mainDataMap.put("class", "BucketWise_Report_Template");
+		mainDataMap.put("title", "Aaratech Leasing System");
+		Date reportDate = getDateByCompanyCode("BAY");
+		AtomicReference<Double> doubleval= new AtomicReference<>(0d);
+		List<HashMap<String, Comparable>> detailsList = new ArrayList<HashMap<String, Comparable>>();
+		bucketWises.forEach(bw -> {
+			
+			HashMap<String, Comparable> dataMap= new HashMap<String, Comparable>();
+			dataMap.put("NAME","Total Amount Due");
+			dataMap.put("NUMBER", bw.getCOUNT_TOTAL_AMOUNT_DUE());
+			dataMap.put("AMOUNT", bw.getTOTAL_AMOUNT_DUE());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","Current Due");
+			dataMap.put("NUMBER", bw.getTOTAL_CURRENT_BALANCE());
+			dataMap.put("AMOUNT", bw.getCURRENT_BALANCE());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","X  Days");
+			dataMap.put("NUMBER", bw.getTOTAL_X_DAYS_AMOUNT());
+			dataMap.put("AMOUNT", bw.getX_DAYS_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","30 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_COUNT_DAYS_30_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_30_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","60 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_COUNT_DAYS_60_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_60_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","90 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_COUNT_DAYS_90_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_90_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","120 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_120_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_120_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","150 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_150_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_150_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","180 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_180_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_180_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","210 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_210_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_210_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","240 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_240_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_240_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","270 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_270_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_270_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","300 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_300_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_300_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			
+			HashMap<String, Comparable> dataMap14= new HashMap<String, Comparable>();
+			dataMap.put("NAME","330 Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_330_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_330_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
+			dataMap.clear();
+			
+			dataMap.put("NAME","360+ Days");
+			dataMap.put("NUMBER", bw.getTOTAL_DAYS_360_AMOUNT());
+			dataMap.put("AMOUNT", bw.getDAYS_360_AMOUNT());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			dataMap.put("COMPANY_CODE", bw.getCOMPANY_CODE());
+			detailsList.add(new HashMap<>(dataMap));
 		});
 		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);

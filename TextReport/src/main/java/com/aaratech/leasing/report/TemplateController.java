@@ -865,7 +865,54 @@ public class TemplateController {
 		template.setMaxWidth(133);
 		templateDao.save(template);
 	}
-	
+	@RequestMapping("/bucket_wise_template")
+	public void bucket_wise_template(){
+		Template template = new Template();
+		template.setName("BucketWise_Report_Template");
+
+		List<MainHeader> mainHeaders = new ArrayList<>();
+		mainHeaders.add(setMainHeader("title", Type.VALUE, 1, Alignment.CENTER, 115, false, false, template,false));
+		mainHeaders.add(setMainHeader("Date :", Type.LABEL, 1, Alignment.CENTER, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("HEADER_DATE", Type.DATE, 1, Alignment.RIGHT, 11, false, false, template,false));
+		mainHeaders.add(setMainHeader("Unworked Accounts Summary Report", Type.LABEL,2, Alignment.CENTER, 117, false, false, template,false));
+		mainHeaders.add(setMainHeader("Page :", Type.LABEL, 2, Alignment.LEFT, 6, false, false, template,false));
+		mainHeaders.add(setMainHeader("page", Type.PAGE, 2, Alignment.LEFT, 10, false, false, template,false));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 3, Alignment.CENTER, 0, true, false, template,false));
+		mainHeaders.add(setMainHeader("Company Name : ", Type.LABEL, 4, Alignment.LEFT, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("COMPANY_CODE", Type.VALUE, 4, Alignment.LEFT, 117, false, false, template,true));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 5, Alignment.CENTER, 0, true, false, template,false));
+		template.setMainHeader(mainHeaders);
+
+
+		List<TableHeader>headers = new ArrayList<>();
+		headers.add(setHeaders("S.No",template,6));
+		headers.add(setHeaders("Bucket",template,20));
+		headers.add(setHeaders("Number",template,20));
+		headers.add(setHeaders("Amount",template,20));
+
+		template.setTableHeaders(headers);
+
+		List<Key> keys = new ArrayList<>();
+		keys.add(setKeyWithSumAndFormat("NAME",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("NUMBER",Alignment.RIGHT,20,template,true,false));
+		keys.add(setKeyWithSumAndFormat("AMOUNT",Alignment.RIGHT,20,template,true,true));
+		template.setTableKeys(keys);
+
+		List<PageFooter> pageFooters= new ArrayList<>();
+		
+		pageFooters.add(setPageFooter("", Type.LABEL, 0, Alignment.LEFT, 1, false, true, template));
+		pageFooters.add(setPageFooter("Total", Type.LABEL,26, Alignment.LEFT, 2, false, false, template));
+		pageFooters.add(setPageFooter("NUMBER_TOTAL", Type.VALUE,20, Alignment.RIGHT, 2, false, false, template));
+		pageFooters.add(setPageFooter("AMOUNT_TOTAL", Type.VALUE,20, Alignment.RIGHT, 2, false, false, template));
+		pageFooters.add(setPageFooter("", Type.LABEL, 0, Alignment.LEFT,3, false, true, template));
+		pageFooters.add(setPageFooter("", Type.LABEL, 0, Alignment.LEFT, 4, true, false, template));
+		template.setPageFooter(pageFooters);
+		
+		template.setDateFormat("MMM-dd-yyyy");
+		template.setPageLines(80);
+		template.setMaxWidth(133);
+		templateDao.save(template);
+	}
 	
 	TableHeader setHeaders(String name,Template template,int width){
 		TableHeader header=new TableHeader();
