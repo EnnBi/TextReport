@@ -780,6 +780,92 @@ public class TemplateController {
 		templateDao.save(template);
 	}
 	
+	@RequestMapping("/satisfied_accounts_template")
+	public void satisfied_accounts_template() {
+
+		Template template = new Template();
+		template.setName("Satisfied_Accounts_Template");
+
+		List<MainHeader> mainHeaders = new ArrayList<>();
+		mainHeaders.add(setMainHeader("title", Type.VALUE, 1, Alignment.CENTER, 115, false, false, template,false));
+		mainHeaders.add(setMainHeader("Date :", Type.LABEL, 1, Alignment.CENTER, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("HEADER_DATE", Type.DATE, 1, Alignment.RIGHT, 11, false, false, template,false));
+		mainHeaders.add(setMainHeader("Satisfied Accounts  Report", Type.LABEL, 2, Alignment.CENTER, 117, false, false, template,false));
+		mainHeaders.add(setMainHeader("Page :", Type.LABEL, 2, Alignment.LEFT, 6, false, false, template,false));
+		mainHeaders.add(setMainHeader("page", Type.PAGE, 2, Alignment.LEFT, 10, false, false, template,false));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 3, Alignment.CENTER, 0, true, false, template,false));
+		mainHeaders.add(setMainHeader("Company Name : ", Type.LABEL, 4, Alignment.LEFT, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("COMPANY_CODE", Type.VALUE, 4, Alignment.LEFT, 117, false, false, template,true));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 5, Alignment.CENTER, 0, true, false, template,false));
+		template.setMainHeader(mainHeaders);
+
+
+		List<TableHeader>headers = new ArrayList<>();
+		headers.add(setHeaders("S.No",template,6));
+		headers.add(setHeaders("Class",template,20));
+		headers.add(setHeaders("Collector",template,20));
+		headers.add(setHeaders("Number of Accounts",template,20));
+
+		template.setTableHeaders(headers);
+
+		List<Key> keys = new ArrayList<>();
+		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.RIGHT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,false));
+		template.setTableKeys(keys);
+
+		template.setDateFormat("MMM-dd-yyyy");
+		template.setPageLines(80);
+		template.setMaxWidth(133);
+		templateDao.save(template);
+	}
+	
+	@RequestMapping("/unworked_accounts_summary_template")
+	public void unworked_accounts_summary_template() {
+
+		Template template = new Template();
+		template.setName("Unworked_Accounts_Summary_Template");
+
+		List<MainHeader> mainHeaders = new ArrayList<>();
+		mainHeaders.add(setMainHeader("title", Type.VALUE, 1, Alignment.CENTER, 115, false, false, template,false));
+		mainHeaders.add(setMainHeader("Date :", Type.LABEL, 1, Alignment.CENTER, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("HEADER_DATE", Type.DATE, 1, Alignment.RIGHT, 11, false, false, template,false));
+		mainHeaders.add(setMainHeader("Unworked Accounts Summary Report", Type.LABEL, 2, Alignment.CENTER, 117, false, false, template,false));
+		mainHeaders.add(setMainHeader("Page :", Type.LABEL, 2, Alignment.LEFT, 6, false, false, template,false));
+		mainHeaders.add(setMainHeader("page", Type.PAGE, 2, Alignment.LEFT, 10, false, false, template,false));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 3, Alignment.CENTER, 0, true, false, template,false));
+		mainHeaders.add(setMainHeader("Company Name : ", Type.LABEL, 4, Alignment.LEFT, 0, false, false, template,false));
+		mainHeaders.add(setMainHeader("COMPANY_CODE", Type.VALUE, 4, Alignment.LEFT, 117, false, false, template,true));
+		mainHeaders.add(setMainHeader("", Type.LABEL, 5, Alignment.CENTER, 0, true, false, template,false));
+		template.setMainHeader(mainHeaders);
+
+
+		List<TableHeader>headers = new ArrayList<>();
+		headers.add(setHeaders("S.No",template,6));
+		headers.add(setHeaders("Class",template,20));
+		headers.add(setHeaders("No of Days",template,20));
+		headers.add(setHeaders("Number of Accounts",template,20));
+		headers.add(setHeaders("Total Amount Due",template,20));
+
+		template.setTableHeaders(headers);
+
+		List<Key> keys = new ArrayList<>();
+		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("UNWORKED_ACCOUNT_DAYS",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.LEFT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("TOTAL_AMOUNT_DUE",Alignment.RIGHT,20,template,false,true));
+		template.setTableKeys(keys);
+
+		List<PageFooter> pageFooters= new ArrayList<>();
+		pageFooters.add(setPageFooter("", Type.LABEL, 0, Alignment.LEFT, 1, true, false, template));
+		template.setPageFooter(pageFooters);
+		
+		template.setDateFormat("MMM-dd-yyyy");
+		template.setPageLines(80);
+		template.setMaxWidth(133);
+		templateDao.save(template);
+	}
+	
 	
 	TableHeader setHeaders(String name,Template template,int width){
 		TableHeader header=new TableHeader();

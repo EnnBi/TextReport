@@ -5,9 +5,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import com.aaratech.leasing.projections.BrokenPromisesSummary;
 import com.aaratech.leasing.projections.ClassWiseAccountSummary;
+import com.aaratech.leasing.projections.SatisfiedAccounts;
+import com.aaratech.leasing.projections.UnworkedAccountDays;
 import com.aaratech.leasing.report.dataentity.UnworkedAcctDays;
 import com.aaratech.leasing.report.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -492,12 +495,13 @@ public class ReportDataGenerator {
 
 	@GetMapping("/unworkedAccountsReport")
 	public void unworkedAccountsReport(){
-		List<UnworkedAcctDays> unworkedAcctDaysList= new ArrayList<>();//unworkedAccountDaysRepo.fetchUnworkedAccntDays();
-		List<UnworkedAcctDays> filteredList = new ArrayList<>();
-		/*unworkedAcctDaysList.forEach(u->{
-			if(!unworkedAccountDaysRepo.checkExistsInActionHistory(u.getContractCardId(), LocalDate.now(), LocalDate.now().minusDays(u.getUnworkedAccountDays())))
-				filteredList.add(u);
-		});*/
+		List<UnworkedAccountDays> unworkedAcctDaysList= accountDetailsRepo.fetchUnworkedAccountDays();
+		List<UnworkedAccountDays> filteredList = new ArrayList<>();
+		unworkedAcctDaysList.forEach(unw->{
+			System.err.println("I m here"+accountDetailsRepo.checkCountInActionHistory(unw.getBUSINESS_DATE().minusDays(unw.getUNWORKED_ACCOUNT_DAYS()),unw.getBUSINESS_DATE()));
+			if(accountDetailsRepo.checkCountInActionHistory(unw.getBUSINESS_DATE().minusDays(unw.getUNWORKED_ACCOUNT_DAYS()),unw.getBUSINESS_DATE()) == null)
+				filteredList.add(unw);
+		});
 
 		HashMap<String, Object> mainDataMap= new HashMap<String, Object>();
 		mainDataMap.put("class", "Unworked_Template");
@@ -505,19 +509,18 @@ public class ReportDataGenerator {
 		Date reportDate = getDateByCompanyCode("BAY");
 		AtomicReference<Double> doubleval= new AtomicReference<>(0d);
 		List<HashMap<String, Comparable>> detailsList = new ArrayList<HashMap<String, Comparable>>();
-		System.out.println("Size of list "+accountDetailsRepo.findByContractStatusOrderByClassIdAsc("A").size());
 		filteredList.forEach(acc -> {
-			doubleval.updateAndGet(v -> v + acc.getTotalAmountDue());
+			doubleval.updateAndGet(v -> v + acc.getTOTAL_AMOUNT_DUE());
 			HashMap<String, Comparable> dataMap= new HashMap<String, Comparable>();
-			dataMap.put("CONTRACT_CARD_ID", acc.getContractCardId());
-			dataMap.put("CUSTOMER_NAME", acc.getCustomerName());
-			dataMap.put("CLASS_ID", acc.getClassId());
-			dataMap.put("UNWORKED_ACCOUNT_DAYS", acc.getUnworkedAccountDays());
-			dataMap.put("PRIORITY", acc.getPriority());
-			dataMap.put("COLLECTION_START_DATE", formatDate(java.sql.Date.valueOf(acc.getCollectionStartDate())));
-			dataMap.put("DELINQUENT_DUE", acc.getDelinquentDue());
-			dataMap.put("TOTAL_AMOUNT_DUE", acc.getTotalAmountDue());
-			dataMap.put("COMPANY_CODE", acc.getCompanyCode());
+			dataMap.put("CONTRACT_CARD_ID", acc.getCONTRACT_CARD_ID());
+			dataMap.put("CUSTOMER_NAME", acc.getCUSTOMER_NAME());
+			dataMap.put("CLASS_ID", acc.getCLASS_ID());
+			dataMap.put("UNWORKED_ACCOUNT_DAYS", acc.getUNWORKED_ACCOUNT_DAYS());
+			dataMap.put("PRIORITY", acc.getPRIORITY());
+			dataMap.put("COLLECTION_START_DATE", formatDate(java.sql.Date.valueOf(acc.getCOLLECTION_START_DATE())));
+			dataMap.put("DELINQUENT_DUE", acc.getDELINQUENT_DUE());
+			dataMap.put("TOTAL_AMOUNT_DUE", acc.getTOTAL_AMOUNT_DUE());
+			dataMap.put("COMPANY_CODE", acc.getCOMPANY_CODE());
 			dataMap.put("HEADER_DATE", formatDate(reportDate));
 			detailsList.add(dataMap);
 		});
@@ -593,6 +596,99 @@ public class ReportDataGenerator {
 			dataMap.put("HEADER_DATE", formatDate(reportDate));
 			detailsList.add(dataMap);
 		});
+		mainDataMap.put("details", detailsList);
+		if (detailsList.size()>0) {
+			System.out.println("mainDataMap >>> " + mainDataMap);
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			try {
+				objectMapper.setDateFormat(new SimpleDateFormat("MMM-dd-yyyy"));
+				String json = objectMapper.writeValueAsString(mainDataMap);
+				System.out.println("json >>>> " + json);
+				reportService.generateReport(json);
+			} catch (JsonProcessingException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@GetMapping("/satisfiedAccounts")
+	public void satisfiedAccounts(){
+		List<SatisfiedAccounts> satisfiedAccounts=accountDetailsRepo.fetchSatisfiedAccounts();
+		
+		HashMap<String, Object> mainDataMap= new HashMap<String, Object>();
+		mainDataMap.put("class", "Satisfied_Accounts_Template");
+		mainDataMap.put("title", "Aaratech Leasing System");
+		Date reportDate = getDateByCompanyCode("BAY");
+		List<HashMap<String, Comparable>> detailsList = new ArrayList<HashMap<String, Comparable>>();
+		satisfiedAccounts.forEach(sa -> {
+			System.err.println(sa.getCOMPANY_CODE()+"------"+sa.getCLASS_ID()+"---"+sa.getNO_OF_ACCOUNTS()+"----"+sa.getCOLLECTOR_ID());;
+			HashMap<String, Comparable> dataMap= new HashMap<String, Comparable>();
+			dataMap.put("COMPANY_CODE", sa.getCOMPANY_CODE());
+			dataMap.put("COLLECTOR_ID", sa.getCOLLECTOR_ID());
+			dataMap.put("NO_OF_ACCOUNTS", sa.getNO_OF_ACCOUNTS());
+			dataMap.put("CLASS_ID", sa.getCLASS_ID());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			detailsList.add(dataMap);
+		});
+		mainDataMap.put("details", detailsList);
+		if (detailsList.size()>0) {
+			System.out.println("mainDataMap >>> " + mainDataMap);
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			try {
+				objectMapper.setDateFormat(new SimpleDateFormat("MMM-dd-yyyy"));
+				String json = objectMapper.writeValueAsString(mainDataMap);
+				System.out.println("json >>>> " + json);
+				reportService.generateReport(json);
+			} catch (JsonProcessingException | NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@GetMapping("/unworkedAccountsSummaryReport")
+	public void unworkedAccountsSummaryReport(){
+		List<UnworkedAccountDays> unworkedAcctDaysList= accountDetailsRepo.fetchUnworkedAccountDays();
+		List<UnworkedAccountDays> filteredList = new ArrayList<>();
+		unworkedAcctDaysList.forEach(unw->{
+			if(accountDetailsRepo.checkCountInActionHistory(unw.getBUSINESS_DATE().minusDays(unw.getUNWORKED_ACCOUNT_DAYS()),unw.getBUSINESS_DATE()) == null)
+				filteredList.add(unw);
+		});
+		
+		Map<String,List<UnworkedAccountDays>> groupedSummary = filteredList.stream().collect(Collectors.groupingBy(f->f.getCLASS_ID()));
+		List<UnworkedAccountSummary> unworkedAccountSummaries=new ArrayList<UnworkedAccountSummary>();
+		for (Map.Entry<String, List<UnworkedAccountDays>> entry : groupedSummary.entrySet()) {
+			UnworkedAccountSummary accSumry = new UnworkedAccountSummary();
+			entry.getValue().forEach(ua->{
+				accSumry.setClassId(entry.getKey());
+				accSumry.setCompanyCode(ua.getCOMPANY_CODE());
+				accSumry.setUnworkedDays(ua.getUNWORKED_ACCOUNT_DAYS());
+				accSumry.setTotalAmountDue(accSumry.getTotalAmountDue()+ua.getTOTAL_AMOUNT_DUE());
+				
+			});
+			accSumry.setNoOfAccounts(entry.getValue().size());
+			unworkedAccountSummaries.add(accSumry);
+		}
+		
+		
+		HashMap<String, Object> mainDataMap= new HashMap<String, Object>();
+		mainDataMap.put("class", "Unworked_Accounts_Summary_Template");
+		mainDataMap.put("title", "Aaratech Leasing System");
+		Date reportDate = getDateByCompanyCode("BAY");
+		AtomicReference<Double> doubleval= new AtomicReference<>(0d);
+		List<HashMap<String, Comparable>> detailsList = new ArrayList<HashMap<String, Comparable>>();
+		unworkedAccountSummaries.forEach(acc -> {
+			HashMap<String, Comparable> dataMap= new HashMap<String, Comparable>();
+			dataMap.put("CLASS_ID", acc.getClassId());
+			dataMap.put("UNWORKED_ACCOUNT_DAYS", acc.getUnworkedDays());
+			dataMap.put("NO_OF_ACCOUNTS", acc.getNoOfAccounts());
+			dataMap.put("TOTAL_AMOUNT_DUE", acc.getTotalAmountDue());
+			dataMap.put("COMPANY_CODE", acc.getCompanyCode());
+			dataMap.put("HEADER_DATE", formatDate(reportDate));
+			detailsList.add(dataMap);
+		});
+		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);
 		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
