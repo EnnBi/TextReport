@@ -88,7 +88,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -100,8 +99,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
-		
 		return null;
 	}
 
@@ -130,7 +127,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -142,7 +138,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return null;
 	}
@@ -176,7 +171,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -188,8 +182,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
-
 		return null;
 	}
 
@@ -306,7 +298,6 @@ public class ReportDataGenerator {
 		});
 		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -318,7 +309,7 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
+		
 		
 		return null;
 	}
@@ -348,7 +339,6 @@ public class ReportDataGenerator {
 
 		mainDataMap.put("total", decimal);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -360,7 +350,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return null;
 	}
@@ -391,7 +380,6 @@ public class ReportDataGenerator {
 
 		mainDataMap.put("total", decimal);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -403,7 +391,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return null;
 	}
@@ -433,7 +420,6 @@ public class ReportDataGenerator {
 
 		mainDataMap.put("total", decimal);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -445,7 +431,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return null;
 	}
@@ -477,7 +462,6 @@ public class ReportDataGenerator {
 
 		mainDataMap.put("total", decimal);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -489,7 +473,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
-		}
 
 		return null;
 	}
@@ -527,7 +510,6 @@ public class ReportDataGenerator {
 		});
 		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -539,7 +521,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
 	}
 
 	@GetMapping("/classWiseAccountSummaryReport")
@@ -563,7 +544,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -575,7 +555,6 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
 	}
 	
 	@GetMapping("/brokenPromisesSummary")
@@ -598,7 +577,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -610,7 +588,7 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
+		
 	}
 	
 	@GetMapping("/satisfiedAccounts")
@@ -633,7 +611,6 @@ public class ReportDataGenerator {
 			detailsList.add(dataMap);
 		});
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -645,7 +622,7 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
+		
 	}
 	
 	@GetMapping("/unworkedAccountsSummaryReport")
@@ -691,7 +668,6 @@ public class ReportDataGenerator {
 		});
 		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -703,7 +679,7 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
+		
 	}
 	
 	@GetMapping("/bucketWiseReport")
@@ -839,7 +815,6 @@ public class ReportDataGenerator {
 		});
 		mainDataMap.put("total", doubleval);
 		mainDataMap.put("details", detailsList);
-		if (detailsList.size()>0) {
 			System.out.println("mainDataMap >>> " + mainDataMap);
 			ObjectMapper objectMapper = new ObjectMapper();
 
@@ -851,7 +826,7 @@ public class ReportDataGenerator {
 			} catch (JsonProcessingException | NoSuchFieldException e) {
 				e.printStackTrace();
 			}
-		}
+		
 	}
 	
 	String formatDate(Date dt){

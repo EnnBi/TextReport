@@ -19,6 +19,8 @@ public class TableHeader {
 		
 	int width;
 	
+	String alignment;
+	
 	@ManyToOne
 	@JoinColumn(name="Temp_ID")
 	Template template;
@@ -53,6 +55,14 @@ public class TableHeader {
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+
+	public String getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(String alignment) {
+		this.alignment = alignment;
 	}
 
 	

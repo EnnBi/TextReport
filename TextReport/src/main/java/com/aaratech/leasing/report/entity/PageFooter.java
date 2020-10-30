@@ -31,6 +31,8 @@ public class PageFooter {
 
 	boolean isPage;
 	
+	String format;
+	
 	@ManyToOne
 	@JoinColumn(name="Temp_ID")
 	Template template;
@@ -115,4 +117,13 @@ public class PageFooter {
 		this.isPage = isPage;
 	}
 
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	
 }

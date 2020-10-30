@@ -3,17 +3,28 @@ package com.aaratech.leasing.report;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.aaratech.leasing.report.entity.*;
-import com.aaratech.leasing.report.repo.TemplateDao;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aaratech.leasing.report.TemplateController.Format;
+import com.aaratech.leasing.report.entity.Key;
+import com.aaratech.leasing.report.entity.MainFooter;
+import com.aaratech.leasing.report.entity.MainHeader;
+import com.aaratech.leasing.report.entity.PageFooter;
+import com.aaratech.leasing.report.entity.TableHeader;
+import com.aaratech.leasing.report.entity.Template;
+import com.aaratech.leasing.report.repo.TemplateDao;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -109,18 +120,25 @@ public class ReportGeneratorService {
 					line="";
 				}
 				else{
+					boolean hasSize = ((List<Map<String, String>>)map.get("details")).size()>0;
 					if(header.isCompany() ){
-						companyName = ((List<Map<String, String>>)map.get("details")).get(index).get(header.getName());
-						companyLabel=header.getName();
-						map.put(header.getName(),companyName);
+						if(hasSize){
+							companyName = ((List<Map<String, String>>)map.get("details")).get(index).get(header.getName());
+							companyLabel=header.getName();
+							map.put(header.getName(),companyName);
+						}
 					}
 					if(header.isClass()){
-						className=((List<Map<String, String>>)map.get("details")).get(index).get(header.getName());
-						classLabel=header.getName();
-						map.put(header.getName(), className);
+						if(hasSize){
+							className=((List<Map<String, String>>)map.get("details")).get(index).get(header.getName());
+							classLabel=header.getName();
+							map.put(header.getName(), className);
+						}
 					}
 					if(header.getType().equals(Type.DATE.toString())){
+					  if(hasSize){	
 						map.put(header.getName(), ((List<Map<String, String>>)map.get("details")).get(index).get(header.getName()));
+					  }
 					}
 					line = appendToLine(header, line, map, template.getDateFormat());
 				}
@@ -144,9 +162,8 @@ public class ReportGeneratorService {
 				lineNo++;
 				lineCount++;
 			}
-			line=line.concat(header.getValue());
-			line = StringUtils.rightPad(line,length+header.getWidth());
-
+			
+			line = line+paddedText(header.getValue(), header.getAlignment(), header.getWidth());
 		}
 		line=line.concat(System.lineSeparator());
 		lineCount ++;
@@ -164,7 +181,7 @@ public class ReportGeneratorService {
 		List<Key> keys = templateDao.findKeysOnTemplateId(template.getId());
 		Map<String,Double> propertySumMap = new HashMap<>();
 		String line="";
-
+		if(details.size()>0){
 		for (int i=0;i<details.size();i++) {
 			sNo++;
 			String serialNo=sNo+".";
@@ -181,8 +198,8 @@ public class ReportGeneratorService {
 					Double total = propertySumMap.getOrDefault(key.getValue()+"_TOTAL", 0.0)+Double.valueOf(value);
 					propertySumMap.put(key.getValue()+"_TOTAL", total);
 				}
-				if(key.isDoFormat()){
-					value=	String.format("%,.2f",Double.parseDouble(value));
+				if(key.getFormat() != null && !key.getFormat().isEmpty()){
+					value=	format(value,key.getFormat());
 				}
 
 				splitedValues=Arrays.asList(value.split("(?<=\\G.{"+(key.getWidth()-2)+"})"));
@@ -281,6 +298,11 @@ public class ReportGeneratorService {
 				addPageFooter(template, file, propertySumMap,false);
 		}
 		sNo=0;
+		}
+		else{
+			 line=System.lineSeparator()+System.lineSeparator()+paddedText("No Records Found", Alignment.CENTER.toString(),maxWidth); 
+			 writeToFile(file, line, file.length());
+		}
 	}
 
 	public void addPageFooter(Template template,RandomAccessFile file,Map<String,Double> map, boolean onlyPage) throws IOException{
@@ -386,10 +408,9 @@ public class ReportGeneratorService {
 			case LABEL:
 				return line+paddedText(mainHeader.getName(), mainHeader.getAlignment(), mainHeader.getWidth());
 			case VALUE:
-				System.out.println("Name >>> "+mainHeader.getName());
-				return line+paddedText(map.get(mainHeader.getName()).toString(), mainHeader.getAlignment(), mainHeader.getWidth());
+				return line+paddedText(map.getOrDefault(mainHeader.getName(), " ").toString(), mainHeader.getAlignment(), mainHeader.getWidth());
 			case DATE:
-				return line+paddedText(map.get(mainHeader.getName()).toString(), mainHeader.getAlignment(), mainHeader.getWidth());
+				return line+paddedText(map.getOrDefault(mainHeader.getName()," ").toString(), mainHeader.getAlignment(), mainHeader.getWidth());
 			default:
 				return line+paddedText(String.valueOf(pageNo),mainHeader.getAlignment(), mainHeader.getWidth());
 		}
@@ -399,9 +420,11 @@ public class ReportGeneratorService {
 			case LABEL:
 				return line+paddedText(pageFooter.getName(), pageFooter.getAlignment(), pageFooter.getWidth());
 			case VALUE:
-				String value=map.get(pageFooter.getName()).toString();
+				String value=map.getOrDefault(pageFooter.getName(),0.0).toString();
 				map.remove(pageFooter.getName());
-				return line+paddedText(String.format("%,.2f",Double.valueOf(value)), pageFooter.getAlignment(), pageFooter.getWidth());
+				if(value!=null &&!value.isEmpty())
+					value=format(value, pageFooter.getFormat());
+				return line+paddedText(value, pageFooter.getAlignment(), pageFooter.getWidth());
 			case DATE:
 				return line+paddedText(LocalDate.now()
 						.format(DateTimeFormatter.ofPattern(dateFormat)), pageFooter.getAlignment(), pageFooter.getWidth());
@@ -415,10 +438,9 @@ public class ReportGeneratorService {
 			case LABEL:
 				return line+paddedText(mainFooter.getName(), mainFooter.getAlignment(), mainFooter.getWidth());
 			case VALUE:{
-				String data=map.get(mainFooter.getName()).toString();
-				if(mainFooter.isDoFormat()){
-					data=String.format("%,.2f", Double.valueOf(data));
-				}
+				String data=map.getOrDefault(mainFooter.getName(),0.0).toString();
+				if(data!=null &&!data.isEmpty())
+					data=format(data, mainFooter.getFormat());
 				return line+paddedText(data, mainFooter.getAlignment(), mainFooter.getWidth());
 			}
 			case DATE:
@@ -430,6 +452,7 @@ public class ReportGeneratorService {
 	}
 
 	String paddedText(String text,String aligment,int width){
+
 		switch(Alignment.valueOf(aligment)){
 			case RIGHT:{
 				text = StringUtils.leftPad(text,width-2);
@@ -453,6 +476,18 @@ public class ReportGeneratorService {
 			default:{
 				return StringUtils.rightPad(text,width);
 			}
+		}
+	}
+	
+	String format(String value,String format){
+		switch (Format.valueOf(format)) {
+		case AM:
+			DecimalFormat df = new DecimalFormat("##,##.##");
+			return df.format(Double.parseDouble(value)).toString();
+		case AL:
+			return String.format("%,.2f",Double.parseDouble(value));
+		default:
+			return value;
 		}
 	}
 }

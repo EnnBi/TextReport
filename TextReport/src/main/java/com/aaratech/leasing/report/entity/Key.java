@@ -23,7 +23,7 @@ public class Key {
 	
 	String alignment;
 	
-	boolean doFormat;
+	String format;
 	
 	boolean doSum;
 	
@@ -73,12 +73,12 @@ public class Key {
 		this.alignment = alignment;
 	}
 
-	public boolean isDoFormat() {
-		return doFormat;
+	public String getFormat() {
+		return format;
 	}
 
-	public void setDoFormat(boolean doFormat) {
-		this.doFormat = doFormat;
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	public boolean isDoSum() {

@@ -33,7 +33,7 @@ public class MainFooter {
 	
 	boolean isNewLine;
 	
-	boolean doFormat;
+	String format;
 	
 	@ManyToOne
 	@JoinColumn(name="Temp_ID")
@@ -114,13 +114,15 @@ public class MainFooter {
 		this.template = template;
 	}
 
-	public boolean isDoFormat() {
-		return doFormat;
+	public String getFormat() {
+		return format;
 	}
 
-	public void setDoFormat(boolean doFormat) {
-		this.doFormat = doFormat;
+	public void setFormat(String format) {
+		this.format = format;
 	}
+
+
 	
 	
 	

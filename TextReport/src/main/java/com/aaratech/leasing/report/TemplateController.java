@@ -22,7 +22,7 @@ public class TemplateController {
 
 	enum Type{LABEL,VALUE,DATE,PAGE}
 	enum Alignment{RIGHT,LEFT,CENTER}	
-
+	enum Format{AM,AL}
 	
 	@RequestMapping("/save")
 	public void save() {
@@ -769,9 +769,9 @@ public class TemplateController {
 		template.setTableHeaders(headers);
 
 		List<Key> keys = new ArrayList<>();
-		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("PTP_AMOUNT",Alignment.RIGHT,20,template,false,true));
+		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("PTP_AMOUNT",Alignment.RIGHT,20,template,false,Format.AL));
 		template.setTableKeys(keys);
 
 		template.setDateFormat("MMM-dd-yyyy");
@@ -809,9 +809,9 @@ public class TemplateController {
 		template.setTableHeaders(headers);
 
 		List<Key> keys = new ArrayList<>();
-		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.RIGHT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,false));
+		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.RIGHT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("COLLECTOR_ID",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.RIGHT,20,template,false,null));
 		template.setTableKeys(keys);
 
 		template.setDateFormat("MMM-dd-yyyy");
@@ -850,10 +850,10 @@ public class TemplateController {
 		template.setTableHeaders(headers);
 
 		List<Key> keys = new ArrayList<>();
-		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("UNWORKED_ACCOUNT_DAYS",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("TOTAL_AMOUNT_DUE",Alignment.RIGHT,20,template,false,true));
+		keys.add(setKeyWithSumAndFormat("CLASS_ID",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("UNWORKED_ACCOUNT_DAYS",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("NO_OF_ACCOUNTS",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("TOTAL_AMOUNT_DUE",Alignment.RIGHT,20,template,false,Format.AL));
 		template.setTableKeys(keys);
 
 		List<PageFooter> pageFooters= new ArrayList<>();
@@ -893,9 +893,9 @@ public class TemplateController {
 		template.setTableHeaders(headers);
 
 		List<Key> keys = new ArrayList<>();
-		keys.add(setKeyWithSumAndFormat("NAME",Alignment.LEFT,20,template,false,false));
-		keys.add(setKeyWithSumAndFormat("NUMBER",Alignment.RIGHT,20,template,true,false));
-		keys.add(setKeyWithSumAndFormat("AMOUNT",Alignment.RIGHT,20,template,true,true));
+		keys.add(setKeyWithSumAndFormat("NAME",Alignment.LEFT,20,template,false,null));
+		keys.add(setKeyWithSumAndFormat("NUMBER",Alignment.RIGHT,20,template,true,null));
+		keys.add(setKeyWithSumAndFormat("AMOUNT",Alignment.RIGHT,20,template,true,Format.AL));
 		template.setTableKeys(keys);
 
 		List<PageFooter> pageFooters= new ArrayList<>();
@@ -955,14 +955,14 @@ public class TemplateController {
 		return key;
 	}
 	
-	Key setKeyWithSumAndFormat(String value,Alignment alignment,int width,Template template,boolean doSum,boolean doFormat){
+	Key setKeyWithSumAndFormat(String value,Alignment alignment,int width,Template template,boolean doSum,Format format){
 		Key key =  new Key();
 		key.setValue(value);
 		key.setAlignment(alignment.toString());
 		key.setTemplate(template);
 		key.setWidth(width);
 		key.setDoSum(doSum);
-		key.setDoFormat(doFormat);
+		key.setFormat(format.toString());
 		return key;
 	}
 	
